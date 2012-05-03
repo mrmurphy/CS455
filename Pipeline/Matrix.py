@@ -24,14 +24,20 @@ class Matrix(Vector):
         # The matricies must have equal rows and columns.
         # Returns a matrix with the result.
         result = []
-        for i in [self.rows, self.cols, other.rows, other.cols]:
-            print len(i)
-        for i in range(len(self.rows)):
-            resPart = []
-            for j in range(len(other.cols)):
-                resPart.append(self.rows[i].dot(other.cols[j]))
-            result.append(Vector(resPart))
-        return Matrix(result)
+        # If the other is a vector, just take the dot product of each 
+        # row in self with the vector.
+        if (type(other) == type(Vector())):
+            for i in range(len(self.rows)):
+                result.append(self.rows[i].dot(other))
+            return Vector(result)
+        else:
+            # Compute the product if both are matrices.
+            for i in range(len(self.rows)):
+                resPart = []
+                for j in range(len(other.cols)):
+                    resPart.append(self.rows[i].dot(other.cols[j]))
+                result.append(resPart)
+            return Matrix(*result)
 
     def __repr__(self):
         return repr(self.rows)

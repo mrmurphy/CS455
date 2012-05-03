@@ -2,14 +2,15 @@
 # Written by Murphy Randle, 2012: murphyrandle@gmail.com
 # Heavily referenced from: http://www.math.okstate.edu/~ullrich/PyPlug/
 
-
-class Vector:
+class Vector(object):
     def __init__(self, *indata):
         # This is to check if the args are a list, or just values.
-        if (type(indata[0]) == type([])) or \
-           (type(indata[0]) == type(())):
-            indata = indata[0]
+        if (len(indata) > 0):
+            if (type(indata[0]) == type([])) or \
+               (type(indata[0]) == type(())):
+                indata = indata[0]
         self.data = indata
+
         # If the vector has three dimensions, break it up.
         if (len(self.data) == 3):
             self.x = self.data[0]
