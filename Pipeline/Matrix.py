@@ -5,6 +5,7 @@
 # Only matricies with vectors of equal lengths are functional.
 # Anything else will break.
 from Vector import Vector
+from Point import Point
 
 
 class Matrix(Vector):
@@ -26,7 +27,8 @@ class Matrix(Vector):
         result = []
         # If the other is a vector, just take the dot product of each 
         # row in self with the vector.
-        if (type(other) == type(Vector())):
+        if (type(other) == type(Vector())) or \
+            (type(other) == type(Point(0, 0, 0))):
             for i in range(len(self.rows)):
                 result.append(self.rows[i].dot(other))
             return Vector(result)
@@ -39,5 +41,18 @@ class Matrix(Vector):
                 result.append(resPart)
             return Matrix(*result)
 
+    def __str__(self):
+        result = "\n\n".join([x.__str__() for x in self.rows])
+        return result
+
     def __repr__(self):
-        return repr(self.rows)
+        return self.__str__()
+        # return repr(self.rows)
+
+if __name__ == '__main__':
+    # Test cases.
+    x = Matrix(
+            [1,2,3],
+            [4,5,6],
+            [7,8,9])
+    print x
