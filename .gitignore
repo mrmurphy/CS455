@@ -3,3 +3,5 @@
 
 Pipeline/Example.blend
 *.pyc
+
+Pipeline/*.class
