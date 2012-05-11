@@ -5,3 +5,4 @@ Pipeline/Example.blend
 *.pyc
 
 Pipeline/*.class
+*.blend[0-9]

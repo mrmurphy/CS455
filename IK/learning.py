@@ -1,22 +1,41 @@
 import bge
+from mathutils import *
 from math import *
+from Joint import *
 
+# Set up some globals.
+cont = bge.logic.getCurrentController()
+root = cont.owner
 
 def main():
+    # Get some basic objects set up.
+    scene = bge.logic.getCurrentScene()
+    objects = scene.objects
+    suzy = scene.objects['suzy']
 
-    cont = bge.logic.getCurrentController()
-    player = cont.owner
-    keyboard = bge.logic.keyboard
-    factor = 0.4
-    rotFactor = 0.05
-    mouse = bge.logic.mouse
-    height = bge.render.getWindowHeight()
-    width = bge.render.getWindowWidth()
-    suzy = bge.logic.getCurrentScene().objects['Monkey']
+    # Build a list of all of my joints.
+    joints = [Joint(objects['j'+str(i)]) for i in range(0,4)]
+    # Connect up child relationships
+    for i in range(0,3):
+        joints[i].child = joints[i + 1]
 
+    # Make some moves happen.
+    # sinWav(suzy)
+    track(joints[0], suzy)
+
+def sinWav(what):
+    # Moves an object in simple harmonic motion
     amp = 10 
     per = 5
-    newY = amp * cos( 2 * pi / 5 * player['timer'])
-    player.worldPosition = (player.position[0], newY, 0)
+    # Requires a timer attribute on root object.
+    newY = amp * cos( 2 * pi / 5 * root['timer']) + (pi / 2)
+    what.worldPosition = (what.position[0], newY, 0)
+
+def track(obj, target):
+    dif = target.position - obj.o.position
+    angle = atan(dif.y / dif.x)
+    obj.orient += angle
+    obj.setWorldOrientation(0, 0, angle)
 
 main()
+
