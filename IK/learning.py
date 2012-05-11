@@ -19,23 +19,39 @@ def main():
     for i in range(0,3):
         joints[i].child = joints[i + 1]
 
+    jacobian = buildJacobian(joints)
+
     # Make some moves happen.
     # sinWav(suzy)
-    track(joints[0], suzy)
+    # track(joints[0], suzy)
 
-def sinWav(what):
-    # Moves an object in simple harmonic motion
-    amp = 10 
-    per = 5
-    # Requires a timer attribute on root object.
-    newY = amp * cos( 2 * pi / 5 * root['timer']) + (pi / 2)
-    what.worldPosition = (what.position[0], newY, 0)
-
-def track(obj, target):
-    dif = target.position - obj.o.position
-    angle = atan(dif.y / dif.x)
-    obj.orient += angle
-    obj.setWorldOrientation(0, 0, angle)
+def buildJacobian(joints):
+    # Cross (0, 0, 1) with 3 difference vectors
+    # Jacobian is made of those vectors. 
+    # transpose it before returning.
+    upVector = Vector((0, 0, 1))
+    endEffector = joints[len(joints) - 1]
+    products = []
+    for i in range(len(joints) - 1):
+        difVec = endEffector.o.position - joints[i].o.position
+        products.append(upVector.cross(difVec))
+    print(products[0])
+    result = Matrix(list(products[0]), list(products[1]), list(products[2]))
+    result = result.transpose()
+    return result
 
 main()
 
+# def sinWav(what):
+#     # Moves an object in simple harmonic motion
+#     amp = 10 
+#     per = 5
+#     # Requires a timer attribute on root object.
+#     newY = amp * cos( 2 * pi / 5 * root['timer']) + (pi / 2)
+#     what.worldPosition = (what.position[0], newY, 0)
+
+# def track(obj, target):
+#     dif = target.position - obj.o.position
+#     angle = atan(dif.y / dif.x)
+#     obj.orient += angle
+#     obj.setWorldOrientation(0, 0, angle)
