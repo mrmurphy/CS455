@@ -2,6 +2,8 @@ import bge
 from mathutils import *
 from math import *
 from Joint import *
+from MTools.Matrix import Matrix
+from MTools.Vector import Vector
 
 # Set up some globals.
 cont = bge.logic.getCurrentController()
@@ -20,6 +22,7 @@ def main():
         joints[i].child = joints[i + 1]
 
     jacobian = buildJacobian(joints)
+    print(jacobian)
 
     # Make some moves happen.
     # sinWav(suzy)
@@ -29,14 +32,13 @@ def buildJacobian(joints):
     # Cross (0, 0, 1) with 3 difference vectors
     # Jacobian is made of those vectors. 
     # transpose it before returning.
-    upVector = Vector((0, 0, 1))
+    upVector = Vector(0, 0, 1)
     endEffector = joints[len(joints) - 1]
     products = []
     for i in range(len(joints) - 1):
         difVec = endEffector.o.position - joints[i].o.position
         products.append(upVector.cross(difVec))
-    print(products[0])
-    result = Matrix(list(products[0]), list(products[1]), list(products[2]))
+    result = Matrix(products[0], products[1], products[2])
     result = result.transpose()
     return result
 
