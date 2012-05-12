@@ -1,33 +1,45 @@
 import bge
-from mathutils import *
+from MTools.Vector import Vector as MVector
 from math import *
 
 
 class Joint(object):
-    def __init__(self, obj, parent=None, child=None, length=10):
+    def __init__(self, obj, child=None, length=10):
         self.o = obj
-        self.parent = parent
         self.child = child
-        self.orient = 0.0
         self.length = length
 
-    def setWorldOrientation(self, *vals):
-        self.o.worldOrientation = vals
-        if(self.child):
-            self.updateChildPos(self.child)
+    def setWorldOrientation(self, val):
+        self.o.worldOrientation = (0, 0, val)
+        self.updateChildren()
 
     def setWorldPosition(self, *vals):
         self.o.worldPosition = vals
-        if(self.child):
-            self.updateChildPos(self.child)
+        self.updateChildren()
 
-    def updateChildPos(self, joint):
+    def rotateRelative(self, rot):
+        self.o.applyRotation([0, 0, rot])
+        self.updateChildren(rot)
+
+    def updateChildPos(self):
         # Moves the child object
-        joint.setWorldPosition(*(self.o.worldPosition + self.endPos(self)))
+        newPos = self.endPos()
+        self.child.setWorldPosition(*newPos)
 
-    def endPos(self, joint):
+    def updateChildRot(self, rot):
+        # Rotates the child object
+        self.child.rotateRelative(rot)
+
+
+    def endPos(self):
         # Calculates the world space position at the end of this vector
         # based upon the world position of the parent.
-        x = joint.length * cos(joint.orient)
-        y = joint.length * sin(joint.orient)
-        return Vector([x, y, 0])
+        rotation = self.o.worldOrientation.to_euler().z
+        x = self.o.position.x + self.length * cos(rotation)
+        y = self.o.position.y + self.length * sin(rotation)
+        return MVector([x, y, 0])
+
+    def updateChildren(self, rot=0):
+        if(self.child):
+            self.updateChildRot(rot)
+            self.updateChildPos()

@@ -1,19 +1,20 @@
 import bge
-from mathutils import *
 from math import *
 from Joint import *
-from MTools.Matrix import Matrix
-from MTools.Vector import Vector
+from MTools.Matrix import Matrix as MMatrix
+from MTools.Vector import Vector as MVector
 
 # Set up some globals.
 cont = bge.logic.getCurrentController()
 root = cont.owner
+rasterizer = bge.render
 
 def main():
     # Get some basic objects set up.
     scene = bge.logic.getCurrentScene()
     objects = scene.objects
     suzy = scene.objects['suzy']
+    rasterizer.showMouse(True)
 
     # Build a list of all of my joints.
     joints = [Joint(objects['j'+str(i)]) for i in range(0,4)]
@@ -21,39 +22,34 @@ def main():
     for i in range(0,3):
         joints[i].child = joints[i + 1]
 
+    #Compute the jacobian, and build a new vector with the rotation values in it. (Rotations are relative to parent)
     jacobian = buildJacobian(joints)
-    print(jacobian)
+    changeVector = findChangeVector(joints, suzy)
+    rotations = jacobian * changeVector
+    # Scale the rotations down to an acceptable value.
+    rotations *= 0.0007
 
-    # Make some moves happen.
-    # sinWav(suzy)
-    # track(joints[0], suzy)
+    jointsAndRots = list(zip(joints, rotations))
+    [x[0].rotateRelative(x[1]) for x in jointsAndRots]
 
 def buildJacobian(joints):
     # Cross (0, 0, 1) with 3 difference vectors
     # Jacobian is made of those vectors. 
     # transpose it before returning.
-    upVector = Vector(0, 0, 1)
+    upVector = MVector(0, 0, 1)
     endEffector = joints[len(joints) - 1]
     products = []
     for i in range(len(joints) - 1):
         difVec = endEffector.o.position - joints[i].o.position
         products.append(upVector.cross(difVec))
-    result = Matrix(products[0], products[1], products[2])
+    result = MMatrix(products[0], products[1], products[2])
     result = result.transpose()
     return result
 
+def findChangeVector(joints, target):
+    # Find the vector between the end effector and the target.
+    endEffector = joints[len(joints) - 1]
+    vector = MVector(*(target.position - endEffector.o.position))
+    return vector
+
 main()
-
-# def sinWav(what):
-#     # Moves an object in simple harmonic motion
-#     amp = 10 
-#     per = 5
-#     # Requires a timer attribute on root object.
-#     newY = amp * cos( 2 * pi / 5 * root['timer']) + (pi / 2)
-#     what.worldPosition = (what.position[0], newY, 0)
-
-# def track(obj, target):
-#     dif = target.position - obj.o.position
-#     angle = atan(dif.y / dif.x)
-#     obj.orient += angle
-#     obj.setWorldOrientation(0, 0, angle)
