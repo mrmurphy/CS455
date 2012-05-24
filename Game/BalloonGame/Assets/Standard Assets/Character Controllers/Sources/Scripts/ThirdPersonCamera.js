@@ -1,7 +1,7 @@
 
 
 var cameraTransform : Transform;
-private var _target : Transform;
+var _target : Transform;
 
 // The distance in the x-z plane to the target
 
