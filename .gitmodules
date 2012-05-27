@@ -1,3 +1,6 @@
 [submodule "IK/MTools"]
 	path = IK/MTools
 	url = git@github.com:murphyspublic/MTools.git
+[submodule "Raytracer/MTools"]
+	path = Raytracer/MTools
+	url = git@github.com:murphyspublic/MTools.git
