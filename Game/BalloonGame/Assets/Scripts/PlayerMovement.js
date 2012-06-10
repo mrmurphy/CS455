@@ -1,13 +1,21 @@
 #pragma strict
 
 private var charCont:CharacterController;
-var moveMult:float = 0.4;
-// This is inverted. The higher the number, the slower the turn.
-var turnSpeed:float = 1;
-var moveRange:int = 45;
+public var globals:GameGlobals;
+var moveMult:float;
+var turnSpeed:float;
+var moveRange:int;
+var xDirection:int;
 
 function Start () {
     charCont = GetComponent(CharacterController);
+    globals = GameObject.FindWithTag("Globals").GetComponent(GameGlobals);
+    moveMult = 0.4;
+    turnSpeed = 1; // This is inverted. The higher the number, the slower the turn.
+    moveRange = globals.limit;
+    xDirection = -1;
+
+    // Default audio settings:
     audio.volume = 0;
     audio.loop = true;
 }
@@ -33,6 +41,7 @@ function Update () {
             // Take care of turning.
             var cur:float = charCont.transform.eulerAngles.y;
             if(axis < 0){
+                xDirection = -1;
                 if(cur != 90){
                     dif = 90 - cur;
                     if (dif < 1 && dif > -1){
@@ -42,6 +51,7 @@ function Update () {
                     }
                 }
             }else if(axis > 0){
+                xDirection = 1;
                 if(cur != 270){
                     dif = 270 - cur;
                     if (dif < 1 && dif > -1){
