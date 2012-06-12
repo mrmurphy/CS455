@@ -24,7 +24,7 @@ function Start () {
     velocity = 8;
     moveRange = globals.limit;
     captured = false;
-    captureRange = 5;
+    captureRange = 3;
 
 }
 

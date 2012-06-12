@@ -14,10 +14,10 @@ var playTime:float;
 var timeLeft:int;
 
 function Start () {
-    numFreddies = 10;
+    numFreddies = 20;
     numInSchool = 0;
     limit = 45;
-    playTime = 45; // In seconds.
+    playTime = 100; // In seconds.
     showEndScreen = false;
 
     // Instantiate Freddies:
